@@ -1,0 +1,5 @@
+- name: Restart iptables-persistent
+  become: true
+  service:
+    name: iptables.service
+    state: restarted

@@ -1,0 +1,4 @@
+- hosts:
+  - ansible-testnode.ivh
+  roles:
+    - firewalled

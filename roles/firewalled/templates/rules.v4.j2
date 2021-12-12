@@ -4,6 +4,7 @@
 :OUTPUT ACCEPT [0:0]
 :FILTERS-STAGE-1 - [0:0]
 :FILTERS-STAGE-2 - [0:0]
+:FILTERS-STAGE-3 - [0:0]
 
 # STAGE 1
 
@@ -41,6 +42,17 @@
 ## SSH incoming connections
 -A FILTERS-STAGE-2 -p tcp --dport 22 -j ACCEPT
 
+-A FILTERS-STAGE-2 -j FILTERS-STAGE-3
+
 # End of STAGE 2
+
+
+# STAGE 3
+
+{# TODO: ignore missing? #}
+{% include "filters-stage-3.j2" %}
+
+
+# End of STAGE 3
 
 COMMIT
