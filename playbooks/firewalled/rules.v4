@@ -1,0 +1,46 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+:FILTERS-STAGE-1 - [0:0]
+:FILTERS-STAGE-2 - [0:0]
+
+# STAGE 1
+
+-A INPUT -j FILTERS-STAGE-1
+
+## limit icmp's. Counting each sent ping, not only new icmp-connections
+-A FILTERS-STAGE-1 -p icmp --icmp-type echo-request -m limit --limit 3/sec --limit-burst 8 -j ACCEPT
+-A FILTERS-STAGE-1 -p icmp --icmp-type echo-request -j DROP
+
+## Allowing related and established connections
+-A FILTERS-STAGE-1 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+## Accepting loopback connections
+-A FILTERS-STAGE-1 -i lo -j ACCEPT
+
+## Dropping INVALID
+-A FILTERS-STAGE-1 -m conntrack --ctstate INVALID -j DROP
+
+## Chains for protocols
+-A FILTERS-STAGE-1 -p udp -m conntrack --ctstate NEW -j FILTERS-STAGE-2
+-A FILTERS-STAGE-1 -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j FILTERS-STAGE-2
+
+## Reject TCP connections and UDP streams if the ports are not opened
+-A FILTERS-STAGE-1 -p udp -j REJECT --reject-with icmp-port-unreachable
+-A FILTERS-STAGE-1 -p tcp -j REJECT --reject-with tcp-reset
+
+## Reject all remaining protocols - linux default behavior
+-A FILTERS-STAGE-1 -j REJECT --reject-with icmp-proto-unreachable
+
+# End of STAGE 1
+
+
+# STAGE 2
+
+## SSH incoming connections
+-A FILTERS-STAGE-2 -p tcp --dport 22 -j ACCEPT
+
+# End of STAGE 2
+
+COMMIT
