@@ -1,3 +1,5 @@
+## v2
+
 *filter
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
@@ -40,7 +42,7 @@
 # STAGE 2
 
 ## SSH incoming connections
--A FILTERS-STAGE-2 -p tcp --dport 22 -j ACCEPT
+-A FILTERS-STAGE-2 -p tcp --dport 22 -j ACCEPT -m comment --comment "ssh server"
 
 -A FILTERS-STAGE-2 -j FILTERS-STAGE-3
 
@@ -49,9 +51,9 @@
 
 # STAGE 3
 
-{# TODO: ignore missing? #}
-{% include "filters-stage-3.j2" %}
-
+{% block filters_stage_3 %}
+-A FILTERS-STAGE-3 -j RETURN -m comment --comment "STAGE-3 not configured for this host"
+{% endblock %}
 
 # End of STAGE 3
 

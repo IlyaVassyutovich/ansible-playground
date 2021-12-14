@@ -1,0 +1,4 @@
+{% extends "common/ipv4-three-stage-filters.iptables-rules.j2" %}
+{% block filters_stage_3 %}
+-A FILTERS-STAGE-3 -p tcp -m tcp --dport 13666 -j ACCEPT -m comment --comment "test diabolical port 👿"
+{% endblock %}

@@ -7,7 +7,7 @@
 - name: Setup (copy) rules for IPv4
   become: true
   template:
-    src: ./rules.v4.j2
+    src: "{{ inventory_hostname }}/ipv4.iptables-rules.j2"
     dest: /etc/iptables/rules.v4
     group: root
     owner: root
